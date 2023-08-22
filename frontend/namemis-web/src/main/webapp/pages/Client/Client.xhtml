@@ -1,0 +1,138 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/pages/californiatemplate/template.xhtml">
+
+    <ui:define name="content">
+        <h:form id="clientview" enctype="multipart/form-data">
+            <p:growl id="messages" showDetail="true" />
+            <div class="p-grid ">
+                <div class="p-col-12">
+                    <div class="card">
+                        <h:outputText value="Filters" />
+
+                        <div class="p-grid">
+                            <div class="p-col-12 p-md-6 p-lg-2">
+                                <p:inputText id="searchTerm" required="false"
+                                             value="#{clientview.searchTerm}" placeholder="Search ..."
+                                             onkeyup="#{clientview.reloadFilterReset()}">
+
+                                    <p:ajax event="keyup"
+                                            update="clientview"
+                                            listener="#{clientview.reloadFilterReset()}" />
+                                </p:inputText>
+                            </div>
+
+                            <div class="p-col-12 p-md-6 p-lg-3">
+                                <p:calendar placeholder="From Date Created"
+                                            value="#{clientview.createdFrom}" inputStyleClass="Wid100 "
+                                            navigator="true" pattern="dd MMM, yyyy" />
+                            </div>
+                            <div class="p-col-12 p-md-6 p-lg-3">
+                                <p:calendar placeholder="To Date Created"
+                                            value="#{clientview.createdTo}" inputStyleClass="Wid100 "
+                                            navigator="true" pattern="dd MMM, yyyy" />
+                            </div>
+                            <div class="p-col-12 p-md-6 p-lg-1">
+                                <p:commandButton icon="fa fa-search"
+                                                 styleClass="ui-button-success" id="searchbtn"
+                                                 style="margin-right: 18px" update="clientview"
+                                                 actionListener="#{clientview.reloadFilterReset()}">
+                                </p:commandButton>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="p-d-flex p-jc-between" style="margin: 5px">
+                            <div>
+                                <p:commandButton icon="fa fa-search"
+                                                 styleClass="p-mr-2 p-mb-2 primary-button" id="searchBtn"
+                                                 actionListener="#{clientview.reloadFilterReset()}"
+                                                 update="clientview" value="Search">
+                                </p:commandButton>
+                                <p:commandButton icon="fa fa-edit" title="Add Client" value="Add user"
+                                                 styleClass="ui-button-help" immediate="true"
+                                                 actionListener="#{clientDialog.show}">
+                                    <f:setPropertyActionListener value="#{model}"
+                                                                 target="#{clientDialog.model}" />
+
+                                    <p:ajax event="dialogReturn" listener="#{clientview.reloadFilterReset}" update="client" />
+                                </p:commandButton>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-grid ">
+                <div class="p-col-12">
+                    <div class="card">
+
+                        <p:dataTable id="client" var="model"
+                                     value="#{clientview.dataModels}" widgetVar="clientTable"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     paginator="true" lazy="true"
+                                     rows="#{clientview.maximumresultsPerpage}"
+                                     emptyMessage="#{clientview.dataEmptyMessage}"
+                                     paginatorPosition="bottom" paginatorAlwaysVisible="false"
+                                     rowIndexVar="row" reflow="true" styleClass="TableAlgnment">
+
+                            <p:column width="30" headerText="No.">
+                                <h:outputText value="#{row + 1}" />
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="LastName" />
+                                </f:facet>
+                                <h:outputText value="#{model.firstName}" />
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="LastName" />
+                                </f:facet>
+                                <h:outputText value="#{model.lastName}" />
+                            </p:column>
+                            <p:column>
+                            <p:commandButton icon="fa fa-trash" title="Delete client"
+                                             styleClass="ui-button-danger" style="margin-left: 5px"
+                                             actionListener="#{clientview.deleteClient(model)}" update="client">
+                                <p:confirm header="Confirmation"
+                                           message="You are about to delete this User. Do you wish to continue?"
+                                           icon="ui-icon-alert" />
+                            </p:commandButton>
+                                <p:commandButton icon="fa fa-edit" title="Edit client" Value="Edit"
+                                                 styleClass="ui-button-help" immediate="true"
+                                                 actionListener="#{clientDialog.show}">
+                                    <f:setPropertyActionListener value="#{model}"
+                                                                 target="#{clientDialog.model}" />
+
+                                    <p:ajax event="dialogReturn" update="client" />
+                                </p:commandButton>
+
+                            </p:column>
+                        </p:dataTable>
+                        <p:blockUI block="clientview" trigger="searchBtn">
+                            <p:graphicImage value="/resources/images/workingicon.png" />
+                        </p:blockUI>
+                    </div>
+                </div>
+            </div>
+
+            <p:blockUI block="clientview">
+                <p:graphicImage value="/resources/images/workingicon.png" />
+            </p:blockUI>
+            <p:confirmDialog global="true">
+                <p:commandButton value="Yes" type="button"
+                                 styleClass="ui-confirmdialog-yes" icon="fa fa-thumbs-up" />
+                <p:commandButton value="No" type="button"
+                                 styleClass="ui-confirmdialog-no" icon="fa fa-thumbs-down" />
+            </p:confirmDialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
